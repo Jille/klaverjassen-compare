@@ -1,0 +1,76 @@
+<html>
+	<head>
+		<title>Henk's klaverjasvergelijker</title>
+		<style>
+			th {
+				text-decoration: underline;
+			}
+			.roundStarter {
+				font-weight: bold;
+			}
+			.winningCard {
+				font-weight: bold;
+				text-decoration: underline;
+			}
+			td.gameDivider {
+				border-right: 1px solid black;
+			}
+			.differentCard {
+				background-color: #ddd;
+			}
+		</style>
+	</head>
+	<body>
+		<table>
+			<tr>
+				<td class="gameDivider">&nbsp;</td>
+{{range $g := .}}
+				<th colspan="5">{{range $g.UniquePlayers}}{{ . }} {{end}}</th>
+				<td class="gameDivider">&nbsp;</td>
+{{end}}
+			</tr>
+			<tr>
+				<td class="gameDivider">&nbsp;</td>
+{{range $g := .}}
+				<td colspan="5">
+					Team 1: <u>{{index $g.PlayingTeam 0}}</u>, {{index $g.PlayingTeam 1}}<br>
+					Team 2: {{index $g.OpposingTeam 0}}, {{index $g.OpposingTeam 1}}<br>
+					Troef is {{$g.Trump.Unicode}}<br>
+					{{$g.PlayingTeamScoreExclGlory}}{{if gt $g.PlayingTeamGlory 0}} (+ {{$g.PlayingTeamGlory}} roem){{end}}
+					vs
+					{{$g.OpposingTeamScoreExclGlory}}{{if gt $g.OpposingTeamGlory 0}} (+ {{$g.OpposingTeamGlory}} roem){{end}}.
+					{{if or (eq $g.PlayingTeamScore 0) (eq $g.OpposingTeamScore 0)}}Pit!{{end}}
+					{{if le $g.PlayingTeamScore $g.OpposingTeamScore}}Nat!{{end}}
+				</td>
+				<td class="gameDivider">&nbsp;</td>
+{{end}}
+			</tr>
+{{range $rid, $dummy := (index . 0).Rounds}}
+			<tr>
+				<td class="gameDivider">&nbsp;</td>
+{{range $g := $}}
+	{{with $r := index $g.Rounds $rid}}
+			{{range $g.Players}}
+				<td{{if eq . $r.StartingPlayer}} class="roundStarter"{{end}}>{{.}}</td>
+			{{end}}
+				<td></td>
+				<td class="gameDivider">&nbsp;</td>
+	{{end}}
+{{end}}
+			</tr>
+			<tr>
+				<td class="gameDivider">&nbsp;</td>
+{{range $g := $}}
+	{{with $r := index $g.Rounds $rid}}
+			{{range $r.Cards}}
+				<td class="{{if .Winner}}winningCard {{end}}{{if .Different}}differentCard {{end}}">{{.Suit.Unicode}} {{.Value.Unicode}}</td>
+			{{end}}
+				<td>{{if gt .Glory 0}}{{.Glory}}!{{end}}</td>
+				<td class="gameDivider">&nbsp;</td>
+	{{end}}
+{{end}}
+			</tr>
+{{end}}
+		</table>
+	</body>
+</html>
